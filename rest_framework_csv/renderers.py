@@ -10,9 +10,9 @@ from rest_framework_csv.misc import Echo
 try:
     from six import PY2
 except ImportError:
-    import sys    
+    import sys
     PY2 = sys.version_info[0] == 2
-    
+
 class CSVRenderer(BaseRenderer):
     """
     Renderer which serializes to CSV
@@ -32,6 +32,8 @@ class CSVRenderer(BaseRenderer):
 
         if not isinstance(data, list):
             data = [data]
+
+        self.view = renderer_context['view']
 
         table = self.tablize(data)
         csv_buffer = StringIO()
@@ -70,12 +72,12 @@ class CSVRenderer(BaseRenderer):
             rows = []
             for item in data:
                 row = []
-                for key in data.header:
+                for key in self.view.fields:
                     row.append(item.get(key, None))
                 rows.append(row)
 
             # Return your "table", with the headers as the first row.
-            return [data.header] + rows
+            return [self.view.header] + rows
 
         else:
             return []
